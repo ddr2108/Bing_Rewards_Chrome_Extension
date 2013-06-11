@@ -8,8 +8,8 @@
 	var i = 0;
 	var trendsCount = 0;	
 
-	function search(data){		
-		window.setTimeout('close()', 75000); 
+	function search(data){	
+		//Go through each name and open tab	
 		for (i = 0; i< 50; i++){
 			windows[i] = window.open('http://www.bing.com/search?q=' + stringArr[i],'_newtab' + i);
 		}
@@ -18,10 +18,12 @@
 	
 
 	function onTrendData(data) {
+			//Go through each trend received
         	for (var k = trendsCount ; k < (trendsCount+10); k++) {
-            		stringArr[k]= data[0]["trends"][k-trendsCount]["name"];
-					stringArr[k]=stringArr[k].replace(/#/gi,"");
+            		stringArr[k]= data[0]["trends"][k-trendsCount]["name"];		//Pull name
+					stringArr[k]=stringArr[k].replace(/#/gi,"");				//Fix up name
           	}
+          	//Increment number of trends already found
         	trendsCount+=10;
       	}
 	
