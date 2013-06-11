@@ -6,16 +6,7 @@
 	var stringArr= new Array();
 	var windows=new Array(); 
 	var i = 0;
-	var trendsCount = 0;
-	
-	function close(){
-window.open('http://login.live.com/logout.srf?ct=1341158120&rver=6.0.5286.0&lc=1033&id=264960&ru=http://www.bing.com/Passport.aspx?requrl=http%3a%2f%2fwww.bing.com%2f','_newtabLogout');
-		for (j = 0; j < 50 ; j++){
-			windows[j].close();
-		}
-		
-	}
-	
+	var trendsCount = 0;	
 
 	function search(data){		
 		window.setTimeout('close()', 75000); 
@@ -29,7 +20,7 @@ window.open('http://login.live.com/logout.srf?ct=1341158120&rver=6.0.5286.0&lc=1
 	function onTrendData(data) {
         	for (var k = trendsCount ; k < (trendsCount+10); k++) {
             		stringArr[k]= data[0]["trends"][k-trendsCount]["name"];
-			stringArr[k]=stringArr[k].replace(/#/gi,"");
+					stringArr[k]=stringArr[k].replace(/#/gi,"");
           	}
         	trendsCount+=10;
       	}
