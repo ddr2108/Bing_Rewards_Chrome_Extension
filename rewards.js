@@ -108,8 +108,13 @@ function onTrendData() {
 
 function search(){		
 	//Open all the tabs
-	for (i = 0; i< 50; i++){
+	for (i = 0; i< 10; i++){
 		chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i]});
+				chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i+10]});
+		chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i+20]});
+		chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i+30]});
+		chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i+40]});
+
 	}
 }
 
