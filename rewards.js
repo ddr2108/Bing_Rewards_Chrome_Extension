@@ -44,13 +44,14 @@ req5.onreadystatechange  = onTrendData;						//Call fx
 req5.send(null);											//Send Request
 
 
-var data;
+var data;					//parsed data
 
-var stringArr= new Array();
-var windows=new Array(); 
-var index = new Array();
-var i;
+var stringArr= new Array();	//holds names
+var windows=new Array(); 	//holds windows
+var index = new Array();	//
+var i;						//index
 
+//Ready Flags
 index[1]=0;
 index[2]=0;
 index[3]=0;
@@ -60,6 +61,7 @@ index[5]=0;
 
 function onTrendData() {
 
+	//Get data from each trend when ready
 	if(req1.readyState == 4 && index[1]==0) {
 		data = JSON.parse(req1.responseText);
 		index[1] = 1;
@@ -97,22 +99,18 @@ function onTrendData() {
    		}
 	}
 
+	//All of the trends received
 	if(index[1]==1 && index[2]==1 && index[3]==1 && index[4]==1 && index[5]==1){
-			search();
-			
-			
-		}
-		
-      	}
-
-	function search(callback){		
-		for (i = 0; i< 50; i++){
-			chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i]},function(tab){
-																						windows[i] = tab.id; 
-																						if (i==2){
-																							callback();
-																						}});
-		}
+		search();
 	}
+		
+}
+
+function search(){		
+	//Open all the tabs
+	for (i = 0; i< 50; i++){
+		chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i]});
+	}
+}
 
 	
