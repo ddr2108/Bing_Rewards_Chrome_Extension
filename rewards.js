@@ -67,7 +67,7 @@ function onTrendData() {
 		index[1] = 1;
 		for (var k = 0; k < 10; k++) {
            	stringArr[k]= data [0]["trends"][k]["name"];
-			stringArr[k]=stringArr[k].replace(/#/gi,"");	
+			stringArr[k]=stringArr[k].replace(/#/gi,"");
    		}
 	} else if(req2.readyState == 4 && index[2]==0) {
 		data = JSON.parse(req2.responseText);
@@ -95,7 +95,9 @@ function onTrendData() {
 		index[5] = 1;
 		for (var k = 40; k < 50; k++) {
    			stringArr[k]= data [0]["trends"][k-40]["name"];
-			stringArr[k]=stringArr[k].replace(/#/gi,"");	
+			stringArr[k]=stringArr[k].replace(/#/gi,"");
+						//chrome.tabs.create({"url":"http://www.bing.com/search?q=" + stringArr[k], "active":"false"});
+	
    		}
 	}
 
@@ -108,13 +110,8 @@ function onTrendData() {
 
 function search(){		
 	//Open all the tabs
-	for (i = 0; i< 10; i++){
-		chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i]});
-				chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i+10]});
-		chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i+20]});
-		chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i+30]});
-		chrome.tabs.create({url:'http://www.bing.com/search?q=' + stringArr[i+40]});
-
+	for (i = 0; i< 50; i++){
+		chrome.tabs.create({"url":"http://www.bing.com/search?q=" + stringArr[i], selected: true, active: false});
 	}
 }
 
