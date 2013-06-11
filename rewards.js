@@ -47,8 +47,7 @@ req5.send(null);											//Send Request
 var data;					//parsed data
 
 var stringArr= new Array();	//holds names
-var windows=new Array(); 	//holds windows
-var index = new Array();	//
+var index = new Array();	//holds flags
 var i;						//index
 
 //Ready Flags
