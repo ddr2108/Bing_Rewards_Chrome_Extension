@@ -9,6 +9,6 @@
   },
   "permissions": [
     "tabs",
-    "https://api.twitter.com/"
+    "https://ajax.googleapis.com/"
   ]
 }

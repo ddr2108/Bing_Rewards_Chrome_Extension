@@ -2,7 +2,7 @@
 var req1 = new XMLHttpRequest();
 req1.open(													//Sync Request
     "GET",
-    "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=barack%20obama",
+    "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=obama",
     true);
 req1.onreadystatechange  = onTrendData;						//Call fx
 req1.send(null);											//Send Request
@@ -20,7 +20,7 @@ req2.send(null);											//Send Request
 var req3 = new XMLHttpRequest();
 req3.open(													//Sync Request
     "GET",
-    "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=bejjing",
+    "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=china",
     true);
 req3.onreadystatechange  = onTrendData;						//Call fx
 req3.send(null);											//Send Request
@@ -43,7 +43,6 @@ req5.open(													//Sync Request
 req5.onreadystatechange  = onTrendData;						//Call fx
 req5.send(null);											//Send Request
 
-
 var data;					//parsed data
 
 var stringArr= new Array();	//holds names
@@ -64,44 +63,53 @@ function onTrendData() {
 	if(req1.readyState == 4 && index[1]==0) {
 		data = JSON.parse(req1.responseText);
 		index[1] = 1;
+				           	chrome.tabs.create({"url":"http://www.bing.com/search?q=" + "a" , selected: true, active: false});
 
-		for (var k = 0; k < 10; k++) {
-           	stringArr[k]= data ["responseData"]["results"][k]["title"];
+		for (var k = 0; k < 5; k++) {
+           	stringArr[k] = data ["responseData"]["results"][k]["title"];
 			stringArr[k]=stringArr[k].replace(/#/gi,"");
    		}
 	} else if(req2.readyState == 4 && index[2]==0) {
 		data = JSON.parse(req2.responseText);
 		index[2] = 1;
-		for (var k = 10; k < 20; k++) {
-            stringArr[k]= data ["responseData"]["results"][k-10]["title"];
+		           	chrome.tabs.create({"url":"http://www.bing.com/search?q=" + "a" , selected: true, active: false});
+
+		for (var k = 5; k < 10; k++) {
+            stringArr[k]= data ["responseData"]["results"][k-5]["title"];
 			stringArr[k]=stringArr[k].replace(/#/gi,"");	
   		}
 	} else if(req3.readyState == 4 && index[3]==0) {
 		data = JSON.parse(req3.responseText);
 		index[3] = 1;
-		for (var k = 20; k < 30; k++) {
- 			stringArr[k]= data ["responseData"]["results"][k-20]["title"];
+				           	chrome.tabs.create({"url":"http://www.bing.com/search?q=" + "a" , selected: true, active: false});
+
+		for (var k = 10; k < 15; k++) {
+ 			stringArr[k]= data ["responseData"]["results"][k-10]["title"];
 			stringArr[k]=stringArr[k].replace(/#/gi,"");	
   		}
 	} else if(req4.readyState == 4 && index[4]==0) {
 		data = JSON.parse(req4.responseText);
 		index[4] = 1;
-		for (var k = 30; k < 40; k++) {
-   			stringArr[k]= data ["responseData"]["results"][k-30]["title"];
+				           	chrome.tabs.create({"url":"http://www.bing.com/search?q=" + "a" , selected: true, active: false});
+
+		for (var k = 15; k < 20; k++) {
+   			stringArr[k]= data ["responseData"]["results"][k-15]["title"];
 			stringArr[k]=stringArr[k].replace(/#/gi,"");	
   		}
 	} else if(req5.readyState == 4 && index[5]==0) {
 		data = JSON.parse(req5.responseText);
 		index[5] = 1;
-		for (var k = 40; k < 50; k++) {
-   			stringArr[k]= data ["responseData"]["results"][k-40]["title"];
+				           	chrome.tabs.create({"url":"http://www.bing.com/search?q=" + "a" , selected: true, active: false});
+
+		for (var k = 20; k < 25; k++) {
+   			stringArr[k]= data ["responseData"]["results"][k-20]["title"];
 			stringArr[k]=stringArr[k].replace(/#/gi,"");	
    		}
 	}
 
 	//All of the trends received
 	if(index[1]==1 && index[2]==1 && index[3]==1 && index[4]==1 && index[5]==1){
-						chrome.tabs.create({"url":"http://www.bing.com/search?q=" + "a" + req1.readyState, selected: true, active: false});
+					           	chrome.tabs.create({"url":"http://www.bing.com/search?q=" + "a" , selected: true, active: false});
 
 		search();
 	}
@@ -110,7 +118,7 @@ function onTrendData() {
 
 function search(){		
 	//Open all the tabs
-	for (i = 0; i< 50; i++){
+	for (i = 0; i< 25; i++){
 		chrome.tabs.create({"url":"http://www.bing.com/search?q=" + stringArr[i], selected: true, active: false});
 	}
 }
