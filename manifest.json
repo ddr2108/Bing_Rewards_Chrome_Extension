@@ -4,7 +4,7 @@
   "manifest_version": 3,
   "description": "Quickly get points for Bing Rewards",
   "browser_action": {
-    "default_icon": "search.jpg",
+    "default_icon": "bing.png",
     "default_popup": "popup.html" 
   },
   "permissions": [

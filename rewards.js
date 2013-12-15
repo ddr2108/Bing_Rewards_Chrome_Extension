@@ -1,32 +1,17 @@
+//Search Items
+var stringArr = ["United States","Obama","China", "Europe", "Mexico", "Russia", "India","Brazil", "Atlanta", "New York", 
+"Hollywood", "NASDAQ","Gold","phones","movies", "Europe", "music", "health", "sports", "Chicago", 
+"London", "Paris", "Los Angeles", "Amazon", "Apple", "Microsoft", "Sony", "Korea", "Samsung", "Cisco",
+"insurance", "CDC", "gas", "AAA", "ford", "GM", "GE", "San Francisco","Florida", "California",
+"Washington", "Texas","gun","deal","purchase","politics","world","biden","google","mission",
+"UN","Canada","Japan","UK","dead","fight","law","song","today","news",
+"progress"]
+
+
 var data = new Array();						//parsed JSON data 
-var stringArr = new Array();	//holds names
 var dataRequests = 0;			//# Data Request
 var dataRecieved = 0; 			//Data Recieved
 var searched = 0;				//# bing Searches
-
-//Search Items
-stringArr[0] = "United States"; 
-stringArr[1] = "Obama"; 
-stringArr[2] = "China"; 
-stringArr[3] = "Europe"; 
-stringArr[4] = "Mexico"; 
-stringArr[5] = "Russia"; 
-stringArr[6] = "India"; 
-stringArr[7] = "Brazil"; 
-stringArr[8] = "Atlanta"; 
-stringArr[9] = "New York"; 
-stringArr[10] = "Hollywood"; 
-stringArr[11] = "NASDAQ"; 
-stringArr[12] = "Gold"; 
-stringArr[13] = "phones"; 
-stringArr[14] = "movies"; 
-stringArr[15] = "Europe"; 
-stringArr[16] = "music"; 
-stringArr[17] = "health"; 
-stringArr[18] = "sports"; 
-stringArr[19] = "Chicago"; 
-stringArr[20] = "London"; 
-
 
 //Begin Search
 createPointsRequests();
@@ -55,12 +40,10 @@ function receivePoints(){
 			str = this.responseText.substring(index + 20, index + 150);
 			points = str.substring(0, str.indexOf(" "));
 	 
-			dataRequests = points*searches/3;		//Find necessary requests
+			dataRequests = points*searches/3+1;		//Find necessary requests
 			dataRequests = 10;
 
-			createDataRequests();			//Start Requests for Data
-		}else{
-			chrome.tabs.create({"url":"http://www.bing.com/search?q=" + "Log In", active: false});
+			createDataRequests();					//Start Requests for Data
 		}
 	}
 
@@ -121,10 +104,14 @@ function bing(){
 
 		//Do Search
 		url = "http://www.bing.com/search?q=" + stringArr;
-		chrome.tabs.create({"url":url, active: false});
-        
+        var reqData = new XMLHttpRequest();											//Create Request
+		reqData.open(																//Set link
+		    "GET",
+		    url,
+		    true);																	
+		reqData.send(null);															//Send data
+
         //Do recursive search
         setTimeout(bing, 1000);
 	}
-
 }	
