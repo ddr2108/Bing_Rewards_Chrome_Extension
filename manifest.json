@@ -9,6 +9,7 @@
   },
   "permissions": [
     "tabs",
+    "background",
     "https://ajax.googleapis.com/",
     "http://www.bing.com/"
   ]
