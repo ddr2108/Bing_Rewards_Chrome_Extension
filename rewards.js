@@ -100,10 +100,10 @@ function receiveCompletion(){
 			if (dataRequests>0){
 				createDataRequests();					//Start Requests for Data
 			}else{
-				chrome.tabs.create({"url":"http://www.google.com", active: false});                //Open google to say done
+				createExtraPointRequest();
 			}
 		}else{
-			chrome.tabs.create({"url":"http://www.google.com", active: false});                //Open google to say done
+			createExtraPointRequest();
 		}
 	}
 
@@ -199,4 +199,59 @@ function bing(){
 
 		return;
 	}
+}
+
+function createExtraPointRequest(){
+	var reqExtraPoint;
+
+	reqExtraPoint = new XMLHttpRequest();											//Create Request
+	reqExtraPoint.open(																//Set link
+	    "GET",
+	    "http://www.bing.com/rewards/dashboard",
+	    true);																	
+	reqExtraPoint.onreadystatechange  = receiveExtraPoint;							//Create Callback
+	reqExtraPoint.send(null);														//Send data
+
+	return;
+}
+
+function receiveExtraPoint(){
+	var index; 
+	var indexStart = 0;
+	var indexReplace = 0;
+	var reqExtraPoint;
+	var relativeURLExtraPoint;
+	var urlExtraPoint;
+
+	if (this.readyState==4){
+
+		//Find location of links
+		index = this.responseText.indexOf("/rewardsapp/redirect", indexStart);
+
+		while (index != -1){
+			relativeURLExtraPoint = this.responseText.substring(index, this.responseText.indexOf("\"", index+1));
+
+			while (indexReplace = relativeURLExtraPoint.indexOf("&amp", indexReplace)!=-1){
+				relativeURLExtraPoint = relativeURLExtraPoint.replace("&amp;", '&');
+			}
+
+			urlExtraPoint = "http://www.bing.com" + relativeURLExtraPoint;                //Create URL for rewards points
+
+			reqExtraPoint = new XMLHttpRequest();											//Create Request
+			reqExtraPoint.open(																//Set link
+			    "GET",
+			    urlExtraPoint,
+			    true);																	
+			reqExtraPoint.send(null);
+
+			//Move over search and find next link
+			indexStart = index+1;		
+			index = this.responseText.indexOf("/rewardsapp/redirect", indexStart);
+
+		}
+
+		chrome.tabs.create({"url":"http://www.google.com", active: false});                //Open google to say done
+	}
+
+	return;
 }

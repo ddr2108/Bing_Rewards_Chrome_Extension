@@ -1,0 +1,26 @@
+README
+-------
+
+Installation:
+--------------
+1) Go to Settings->Tools->Extensions
+2) On the top right corner, select "Developer Mode".
+3) Click "Load Unpacked Extension"
+4) Navigate to the folder where the folder with the extension is.
+5) Select the folder. 
+6) Click the "Enabled" button.  
+
+Operation:
+--------------
+Press the Bing button on the navigation bar in Chrome. Once this is done, the Microsoft account that is currently logged in will have all of the rewards points completed. It may take up to 5 minutes for the points to appear, and thus closing out of Chrome before 5 minutes has passed may cause you to not recieve all the points.
+
+The points that you will receive are:
+1) The daily bonus point
+2) The daily search points
+
+Even if these points vary day to day, the extension should be able to get all of the points.
+
+Revision History:
+--------------
+3.1 - add support for getting daily bonus point
+3.0 - do searches in background
