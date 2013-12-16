@@ -12,15 +12,27 @@ var data = new Array();						//parsed JSON data
 var dataRequests = 0;			//# Data Request
 var dataRecieved = 0; 			//Data Recieved
 var searched = 0;				//# bing Searches
+var checkFlag = 0;
 
 //Begin Search
-createPointsRequests();
+chrome.browserAction.onClicked.addListener(createPointsRequests);
+
 
 function createPointsRequests(){
     var reqPoints = new XMLHttpRequest();									//Create Request
     reqPoints.open("GET", "http://www.bing.com/rewards/dashboard", true);	//Set link
-    reqPoints.onreadystatechange = receivePoints;							//Create Callback
+
+    //Create Callback
+    if (checkFlag==1){
+    	checkFlag = 0;
+        reqPoints.onreadystatechange = receiveCompletion;
+    }else{
+    	reqPoints.onreadystatechange = receivePoints;							
+    }						
+
     reqPoints.send(null);													//Send data
+
+    return;
 }
 
 function receivePoints(){
@@ -30,6 +42,7 @@ function receivePoints(){
 	var points;
 
 	if (this.readyState==4){
+
 		//Find location of points
 		index = this.responseText.indexOf("Earn 1 credit per");
 
@@ -41,14 +54,43 @@ function receivePoints(){
 			points = str.substring(0, str.indexOf(" "));
 	 
 			dataRequests = points*searches/3+1;		//Find necessary requests
-			dataRequests = 10;
+			dataRequests = 2;
 
 			createDataRequests();					//Start Requests for Data
 		}
 	}
 
+	return;
 }
 
+function receiveCompletion(){
+	var index;
+	var str;
+	var searches;
+	var points;
+
+	if (this.readyState==4){
+
+		//Find location of points
+		index = this.responseText.indexOf("Earn 1 credit per");
+
+	/*	if (index != -1){	
+			searches = this.responseText.substring(index + 18, index + 19);
+
+			index = this.responseText.indexOf("Bing searches up to");
+			str = this.responseText.substring(index + 20, index + 150);
+			points = str.substring(0, str.indexOf(" "));
+	 
+			dataRequests = points*searches/3+1;		//Find necessary requests
+			dataRequests = 2;
+
+			createDataRequests();					//Start Requests for Data
+		}*/
+	}
+
+	return;
+
+}
 
 function createDataRequests(){
 	var i = 0;
@@ -56,6 +98,7 @@ function createDataRequests(){
 
 	//Do a request for data
 	for (i = 0; i<dataRequests; i++){
+
 		//Create link
 		search = "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q=" + stringArr[i];
 
@@ -67,6 +110,8 @@ function createDataRequests(){
 		reqData.onreadystatechange  = receiveData;									//Create Callback
 		reqData.send(null);															//Send data
 	}
+
+	return;
 }
 
 
@@ -82,6 +127,8 @@ function receiveData() {
 	if (dataRecieved==dataRequests){
 		bing();
 	}
+
+	return;
 }
 
 function bing(){
@@ -113,5 +160,14 @@ function bing(){
 
         //Do recursive search
         setTimeout(bing, 1000);
+	}else{
+		dataRequests = 0;			//# Data Request
+		dataRecieved = 0; 			//Data Recieved
+		searched = 0;				//# bing Searches
+		checkFlag = 1;
+		createPointsRequests();
+	    chrome.tabs.create({"url":"http://www.google.com", active: false});                //Open google to say done
+
+		return;
 	}
-}	
+}
