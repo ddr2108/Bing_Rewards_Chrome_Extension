@@ -8,16 +8,24 @@ var stringArr = ["United States","Obama","China", "Europe", "Mexico", "Russia", 
 "progress"]
 
 
-var data = new Array();						//parsed JSON data 
+var data = new Array();			//parsed JSON data 
+
+var points = 0;					//Potential Points
+var searches;					//# searches / point
+
 var dataRequests = 0;			//# Data Request
 var dataRecieved = 0; 			//Data Recieved
 var searched = 0;				//# bing Searches
-var checkFlag = 0;
 
-//Begin Search
+var checkFlag = 0;				//Flag to determine if doing checking
+
+//Begin Search on click
 chrome.browserAction.onClicked.addListener(createPointsRequests);
 
-
+//////////////////////////
+//Create a request to get
+//points data
+//////////////////////////
 function createPointsRequests(){
     var reqPoints = new XMLHttpRequest();									//Create Request
     reqPoints.open("GET", "http://www.bing.com/rewards/dashboard", true);	//Set link
@@ -35,11 +43,14 @@ function createPointsRequests(){
     return;
 }
 
+//////////////////////////
+//Recieve points data and
+//calculate the number of 
+//searches that need to do
+//////////////////////////
 function receivePoints(){
 	var index;
 	var str;
-	var searches;
-	var points;
 
 	if (this.readyState==4){
 
@@ -63,35 +74,44 @@ function receivePoints(){
 	return;
 }
 
+//////////////////////////
+//Recieve points data and
+//calculate the number of 
+//searches that need to do-
+//specific to second try
+//////////////////////////
 function receiveCompletion(){
 	var index;
 	var str;
-	var searches;
-	var points;
+	var pointsDone;
 
 	if (this.readyState==4){
 
+		str = "of " + points + "credits";
 		//Find location of points
-		index = this.responseText.indexOf("Earn 1 credit per");
+		index = this.responseText.indexOf(str);
 
-	/*	if (index != -1){	
+		if (index != -1){	
 			searches = this.responseText.substring(index + 18, index + 19);
 
-			index = this.responseText.indexOf("Bing searches up to");
 			str = this.responseText.substring(index + 20, index + 150);
-			points = str.substring(0, str.indexOf(" "));
+			pointsDone = str.substring(0, str.indexOf(" "));
 	 
-			dataRequests = points*searches/3+1;		//Find necessary requests
-			dataRequests = 2;
+			//dataRequests = points*searches/3+1;		//Find necessary requests
+			//dataRequests = 2;
 
-			createDataRequests();					//Start Requests for Data
-		}*/
+			//createDataRequests();					//Start Requests for Data
+		}
 	}
 
 	return;
 
 }
 
+//////////////////////////
+//Do a request to get news 
+//data to use in searches
+//////////////////////////
 function createDataRequests(){
 	var i = 0;
 	var search; 
@@ -115,7 +135,10 @@ function createDataRequests(){
 }
 
 
-//After getting JSON data
+//////////////////////////
+//Recieve news data and
+//do the actual searches
+//////////////////////////
 function receiveData() {
 	//Check if data is ready
 	if (this.readyState==4){
@@ -131,6 +154,9 @@ function receiveData() {
 	return;
 }
 
+//////////////////////////
+//Do the actual searches
+//////////////////////////
 function bing(){
 	var indexData = 0;
 	var indexJSON = 0;
