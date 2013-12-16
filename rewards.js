@@ -65,7 +65,6 @@ function receivePoints(){
 			points = str.substring(0, str.indexOf(" "));
 	 
 			dataRequests = points*searches/3+1;		//Find necessary requests
-			dataRequests = 2;
 
 			createDataRequests();					//Start Requests for Data
 		}
@@ -87,20 +86,24 @@ function receiveCompletion(){
 
 	if (this.readyState==4){
 
-		str = "of " + points + "credits";
+		str = "of " + points + " credits";
 		//Find location of points
 		index = this.responseText.indexOf(str);
 
 		if (index != -1){	
-			searches = this.responseText.substring(index + 18, index + 19);
-
-			str = this.responseText.substring(index + 20, index + 150);
-			pointsDone = str.substring(0, str.indexOf(" "));
+			//Get points done
+			pointsDone = this.responseText.substring(index -3, index-1);
+			pointsDone = pointsDone.replace(">","");
 	 
-			//dataRequests = points*searches/3+1;		//Find necessary requests
-			//dataRequests = 2;
+			dataRequests = (points-pointsDone)*searches/3+1;		//Find necessary requests
 
-			//createDataRequests();					//Start Requests for Data
+			if (dataRequests>0){
+				createDataRequests();					//Start Requests for Data
+			}else{
+				chrome.tabs.create({"url":"http://www.google.com", active: false});                //Open google to say done
+			}
+		}else{
+			chrome.tabs.create({"url":"http://www.google.com", active: false});                //Open google to say done
 		}
 	}
 
@@ -191,8 +194,8 @@ function bing(){
 		dataRecieved = 0; 			//Data Recieved
 		searched = 0;				//# bing Searches
 		checkFlag = 1;
+
 		createPointsRequests();
-	    chrome.tabs.create({"url":"http://www.google.com", active: false});                //Open google to say done
 
 		return;
 	}
