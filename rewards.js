@@ -42,7 +42,7 @@ function createPointsRequests(){
     	rewardFlag=0;
     	reqPoints.onreadystatechange = receiveReward;
     }else{ 	
-    	reqPoints.onreadystatechange = receiveReward;		//////////FIX?////////
+    	reqPoints.onreadystatechange = receivePoints;
     }						
 
     reqPoints.send(null);													//Send data
