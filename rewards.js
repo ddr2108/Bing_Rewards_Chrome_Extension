@@ -18,7 +18,8 @@ var dataRecieved = 0; 			//Data Recieved
 var searched = 0;				//# bing Searches
 
 var checkFlag = 0;				//Flag to determine if doing checking
-
+var extraPointFlag = 0;
+var rewardFlag = 0;
 //Begin Search on click
 chrome.browserAction.onClicked.addListener(createPointsRequests);
 
@@ -34,13 +35,149 @@ function createPointsRequests(){
     if (checkFlag==1){
     	checkFlag = 0;
         reqPoints.onreadystatechange = receiveCompletion;
-    }else{
-    	reqPoints.onreadystatechange = receivePoints;							
+    }else if (extraPointFlag==1){
+    	extraPointFlag=0;
+    	reqPoints.onreadystatechange = receiveExtraPoint;
+    }else if (rewardFlag==1){   
+    	rewardFlag=0;
+    	reqPoints.onreadystatechange = receiveReward;
+    }else{ 	
+    	reqPoints.onreadystatechange = receiveReward;		//////////FIX?////////
     }						
 
     reqPoints.send(null);													//Send data
 
     return;
+}
+
+
+//////////////////////////
+//Recieve points data and
+//calculate the number of 
+//searches that need to do-
+//specific to second try
+//////////////////////////
+function receiveCompletion(){
+	var index;
+	var str;
+	var pointsDone;
+
+	if (this.readyState==4){
+
+		str = "of " + points + " credits";
+		//Find location of points
+		index = this.responseText.indexOf(str);
+
+		if (index != -1){	
+			//Get points done
+			pointsDone = this.responseText.substring(index -3, index-1);
+			pointsDone = pointsDone.replace(">","");
+	 
+			dataRequests = (points-pointsDone)*searches/3+1;		//Find necessary requests
+
+			if (dataRequests>0){
+				createDataRequests();					//Start Requests for Data
+			}else{
+				extraPointFlag = 1;
+				createPointsRequests();
+			}
+		}else{
+			extraPointFlag = 1;
+			createPointsRequests();
+		}
+	}
+
+	return;
+
+}
+
+//////////////////////////
+//Recieve data about any
+//additional bonus daily 
+//points
+//////////////////////////
+function receiveExtraPoint(){
+	var index; 
+	var indexStart = 0;
+	var indexReplace = 0;
+	var reqExtraPoint;
+	var relativeURLExtraPoint;
+	var urlExtraPoint;
+
+	if (this.readyState==4){
+
+		//Find location of links
+		index = this.responseText.indexOf("/rewardsapp/redirect", indexStart);
+
+		while (index != -1){
+			relativeURLExtraPoint = this.responseText.substring(index, this.responseText.indexOf("\"", index+1));
+
+			while (indexReplace = relativeURLExtraPoint.indexOf("&amp", indexReplace)!=-1){
+				relativeURLExtraPoint = relativeURLExtraPoint.replace("&amp;", '&');
+			}
+
+			urlExtraPoint = "http://www.bing.com" + relativeURLExtraPoint;                //Create URL for rewards points
+
+			reqExtraPoint = new XMLHttpRequest();											//Create Request
+			reqExtraPoint.open(																//Set link
+			    "GET",
+			    urlExtraPoint,
+			    true);																	
+			reqExtraPoint.send(null);
+
+			//Move over search and find next link
+			indexStart = index+1;		
+			index = this.responseText.indexOf("/rewardsapp/redirect", indexStart);
+
+		}
+
+		rewardFlag = 1;
+		createPointsRequests();
+	}
+
+	return;
+}
+
+//////////////////////////
+//Recieve data about any
+//reward goals that are
+//reachable and redeem
+//////////////////////////
+function receiveReward(){
+	var index; 
+	var percentReachedText;
+	var percentReached;
+	var relativeURL;
+	var tabOpenedFlag = 0;
+
+	if (this.readyState==4){
+
+		//Find location of percentage
+		index = this.responseText.indexOf("progress-value");
+
+		if (index != -1){
+			percentReachedText = this.responseText.substring(index+46, index+70);
+			percentReached = percentReachedText.split("%");
+
+			//If goal reached
+			if (parseInt(percentReached[0],10)>=100){
+				//Find location of links
+				index = this.responseText.indexOf("/rewards/redeem/", index);
+
+				if (index != -1){
+					relativeURL = this.responseText.substring(index, this.responseText.indexOf("\"", index+1));
+					chrome.tabs.create({"url":"http://www.bing.com" + relativeURL, active: true});                //Open google to say done
+					tabOpenedFlag = 1;
+				}
+			}
+		}
+
+		if (tabOpenedFlag == 0){
+			chrome.tabs.create({"url":"http://www.google.com", active: false});                //Open google to say done
+		}
+	}
+
+	return;
 }
 
 //////////////////////////
@@ -71,44 +208,6 @@ function receivePoints(){
 	}
 
 	return;
-}
-
-//////////////////////////
-//Recieve points data and
-//calculate the number of 
-//searches that need to do-
-//specific to second try
-//////////////////////////
-function receiveCompletion(){
-	var index;
-	var str;
-	var pointsDone;
-
-	if (this.readyState==4){
-
-		str = "of " + points + " credits";
-		//Find location of points
-		index = this.responseText.indexOf(str);
-
-		if (index != -1){	
-			//Get points done
-			pointsDone = this.responseText.substring(index -3, index-1);
-			pointsDone = pointsDone.replace(">","");
-	 
-			dataRequests = (points-pointsDone)*searches/3+1;		//Find necessary requests
-
-			if (dataRequests>0){
-				createDataRequests();					//Start Requests for Data
-			}else{
-				createExtraPointRequest();
-			}
-		}else{
-			createExtraPointRequest();
-		}
-	}
-
-	return;
-
 }
 
 //////////////////////////
@@ -199,59 +298,4 @@ function bing(){
 
 		return;
 	}
-}
-
-function createExtraPointRequest(){
-	var reqExtraPoint;
-
-	reqExtraPoint = new XMLHttpRequest();											//Create Request
-	reqExtraPoint.open(																//Set link
-	    "GET",
-	    "http://www.bing.com/rewards/dashboard",
-	    true);																	
-	reqExtraPoint.onreadystatechange  = receiveExtraPoint;							//Create Callback
-	reqExtraPoint.send(null);														//Send data
-
-	return;
-}
-
-function receiveExtraPoint(){
-	var index; 
-	var indexStart = 0;
-	var indexReplace = 0;
-	var reqExtraPoint;
-	var relativeURLExtraPoint;
-	var urlExtraPoint;
-
-	if (this.readyState==4){
-
-		//Find location of links
-		index = this.responseText.indexOf("/rewardsapp/redirect", indexStart);
-
-		while (index != -1){
-			relativeURLExtraPoint = this.responseText.substring(index, this.responseText.indexOf("\"", index+1));
-
-			while (indexReplace = relativeURLExtraPoint.indexOf("&amp", indexReplace)!=-1){
-				relativeURLExtraPoint = relativeURLExtraPoint.replace("&amp;", '&');
-			}
-
-			urlExtraPoint = "http://www.bing.com" + relativeURLExtraPoint;                //Create URL for rewards points
-
-			reqExtraPoint = new XMLHttpRequest();											//Create Request
-			reqExtraPoint.open(																//Set link
-			    "GET",
-			    urlExtraPoint,
-			    true);																	
-			reqExtraPoint.send(null);
-
-			//Move over search and find next link
-			indexStart = index+1;		
-			index = this.responseText.indexOf("/rewardsapp/redirect", indexStart);
-
-		}
-
-		chrome.tabs.create({"url":"http://www.google.com", active: false});                //Open google to say done
-	}
-
-	return;
 }
